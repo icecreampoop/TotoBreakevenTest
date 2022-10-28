@@ -27,7 +27,7 @@ public class Main {
         System.out.println("Which Toto System? ");
         totoSanitizer();
 
-        TotoGameSimulation gameSim = new TotoGameSimulation(budget, totoSystem);
+        new TotoGameSimulation(budget, totoSystem);
 
     }
 }
