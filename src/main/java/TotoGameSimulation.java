@@ -7,13 +7,6 @@ public class TotoGameSimulation {
 
     public TotoGameSimulation(int budget, int userTotoSystem) {
 
-        //checker for valid toto system input
-        while (userTotoSystem>12 || userTotoSystem<6) {
-            System.out.println("Please enter a valid Toto System!");
-            String user_input = sc.next();
-            userTotoSystem = Integer.parseInt(user_input);
-        }
-
         //tabulating number of tries
         switch (userTotoSystem) {
             case 12 -> boardRuns = (float) budget / 924;

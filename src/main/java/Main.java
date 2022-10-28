@@ -16,7 +16,12 @@ public class Main {
         try {
             totoSystem = Byte.parseByte(scan.next());
         } catch (NumberFormatException nfe) {
-            System.out.println("Please enter a valid input!");
+            System.out.println("Please enter a valid Toto System!");
+            totoSanitizer();
+        }
+
+        if (totoSystem > 12 || totoSystem<6) {
+            System.out.println("Please enter a valid Toto System!");
             totoSanitizer();
         }
     }
