@@ -9,6 +9,7 @@ import org.jsoup.select.Elements;
 
 import java.io.IOException;
 import java.net.URL;
+import java.text.MessageFormat;
 import java.util.Scanner;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -84,6 +85,9 @@ public class WebScraper {
             System.out.println("Utilizing " + coreCount + " threads...");
             ExecutorService service = Executors.newFixedThreadPool(coreCount);
 
+            // running time
+            long startTime = System.nanoTime();
+
             try {
                 webClient.getOptions().setThrowExceptionOnScriptError(false);
 
@@ -133,6 +137,11 @@ public class WebScraper {
                     @Override
                     public void run() {
                         latch.countDown();
+                        try {
+                            latch.await();
+                        } catch (InterruptedException e) {
+                            throw new RuntimeException(e);
+                        }
                     }
                 }
 
@@ -143,9 +152,6 @@ public class WebScraper {
                 latch.await();
                 service.shutdown();
 
-                //to ensure threads have time to FINISH calculation before main thread continues
-                while (!(service.isTerminated())) {
-                }
 
                 //doing the math
                 totoData.put("avgTotoSnowball", (totoData.get("avgTotoSnowball") / boardCounter.get()) * 100);
@@ -164,6 +170,8 @@ public class WebScraper {
                 boardCounter.decrementAndGet();
                 faultyLinks.incrementAndGet();
             }
+            long endTime = System.nanoTime();
+            System.out.println(MessageFormat.format("Webscraping time elapsed: {0}s", TimeUnit.SECONDS.convert(endTime - startTime, TimeUnit.NANOSECONDS)));
         }
                 System.out.println("The average chance of Toto Prize Snowballing is " + totoData.get("avgTotoSnowball") + "%");
                 for (int x = 1; x < 8; x++) {
@@ -189,7 +197,7 @@ public class WebScraper {
                     //data filter for each group
                     if (xa == 2) {
                         totoData.merge("avgGrp1Winners", tempFloat, Float::sum);
-                        tempFloat = tempFloat > 0F ? 1F : 0F;
+                        tempFloat = tempFloat > 0F ? 0F : 1F;
                         totoData.merge("avgTotoSnowball", tempFloat, Float::sum);
                     } else if (xa == 3) {
                         totoData.merge("avgGrp2Winners", tempFloat, Float::sum);
